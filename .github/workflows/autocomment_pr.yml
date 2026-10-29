@@ -1,22 +1,19 @@
-name: Review Checklist PR Comment
+name: Auto comment on new PR
 
 on:
   pull_request:
-    types:
-      - opened
-    paths:
-      - 'features/**'
-      
+    types: [opened]
+
 jobs:
-  auto-comment:
-    runs-on: ubuntu-22.04
+  comment:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # Wymagane uprawnienie do pisania komentarzy
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
-      - name: PR Comment
-        run:
-          gh pr comment $PRNUM --body-file .github/workflows/review_checklist.md
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          PRNUM: ${{ github.event.pull_request.number }}
+      - name: Post welcome comment
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # Lub token/App installation token, jeśli używasz GitHub App
+          body: |
+            Cześć! 👋 Dziękujemy za otwarcie nowego Pull Requesta. 
+            Prosimy o upewnienie się, że kod przeszukał testy i spełnia wytyczne projektu.
